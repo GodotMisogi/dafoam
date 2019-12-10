@@ -78,48 +78,51 @@ makeIncompressible
 cd ../simpleDAFoam
 makeIncompressible
 
-cd ../simpleTDAFoam
+cd ../pimpleDAFoam
 makeIncompressible
 
-cd ../buoyantBoussinesqSimpleDAFoam
-makeIncompressible
+# cd ../simpleTDAFoam
+# makeIncompressible
 
-cd ../laplacianDAFoam
-makeIncompressible
+# cd ../buoyantBoussinesqSimpleDAFoam
+# makeIncompressible
 
-cd ../scalarTransportDAFoam
-makeIncompressible
+# cd ../laplacianDAFoam
+# makeIncompressible
 
-cd ../solidDisplacementDAFoam
-makeIncompressible
+# cd ../scalarTransportDAFoam
+# makeIncompressible
 
-cd ../../
+# cd ../solidDisplacementDAFoam
+# makeIncompressible
 
-export DF_CleanDoc=False
-./Allwclean
+# cd ../../
 
-echo "************** Compiling Compressible Adjoint Solvers **************"
-sleep 1
+# export DF_CleanDoc=False
+# ./Allwclean
 
-cd src
-makeCompressible
+# echo "************** Compiling Compressible Adjoint Solvers **************"
+# sleep 1
 
-cd ../applications/coloringSolverCompressible
-makeCompressible
+# cd src
+# makeCompressible
 
-cd ../rhoSimpleDAFoam
-makeCompressible
+# cd ../applications/coloringSolverCompressible
+# makeCompressible
 
-cd ../rhoSimpleCDAFoam
-makeCompressible
+# cd ../rhoSimpleDAFoam
+# makeCompressible
 
-cd ../turboDAFoam
-makeCompressible
+# cd ../rhoSimpleCDAFoam
+# makeCompressible
 
-cd ../buoyantSimpleDAFoam
-makeCompressible
+# cd ../turboDAFoam
+# makeCompressible
 
-cd ../../
+# cd ../buoyantSimpleDAFoam
+# makeCompressible
+
+# cd ../../
 
 echo "************** Compiling Utilities **************"
 sleep 1
