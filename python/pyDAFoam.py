@@ -276,6 +276,15 @@ class PYDAFOAM(AeroSolver):
         maxflowiters : int
             Max non-linear iterations for the flow solver
 
+        deltat : float
+            Time step for the flow solver
+
+        adjusttimestep : bool
+            Adjust time step based on maximum Courant number specification via maxco parameter
+
+        maxco : float
+            Maximum Courant number for unsteady flow simulation
+
         writeinterval : int
             Field output interval for the flow solver, this typically equals to maxflowiters
 
@@ -701,7 +710,7 @@ class PYDAFOAM(AeroSolver):
             Whether to run multipoint optimization
         
         restartopt : bool
-            Whether to restart the adjoint. If truee, it will read the logs from the outputdirectory. NOTE: always restart an optimization fromt the flow solution step. If the optimization dies at the adjoint solution step. Delete all the adjoint solution logs and the previous flow solution logs, then restart.
+            Whether to restart the adjoint. If true, it will read the logs from the outputdirectory. NOTE: always restart an optimization from the flow solution step. If the optimization dies at the adjoint solution step, delete all the adjoint solution logs and the previous flow solution logs, then restart.
         
         avgobjfuncs : bool
             Whether to average the objective function. This is only needed for poor flow convergence
@@ -709,7 +718,7 @@ class PYDAFOAM(AeroSolver):
         avgobjfuncsstart : int
             From which step to average the objfuncs?
         
-        mpispwanrun : bool
+        mpispawnrun : bool
             Whether to use the spawnrun option for parallel runs. For a small number of CPUs, e.g., 4, set it to True. When running on HPC, set it to False, and use the foamRun.sh script in the tutorials.
         
         runpotentialfoam : bool
@@ -757,12 +766,16 @@ class PYDAFOAM(AeroSolver):
          
                     # controlDict
                     'maxflowiters':[int,1000],
-                    'writeinterval':[int,200],
+                    'deltat':[float,1.0e-1],
+                    'adjusttimestep':[bool,False],
+                    'maxco':[float,0.5],
+                    'writeinterval':[float,200.],
                     'writecompress':[str,'on'],
                     'writeformat':[str,'ascii'],
                      
                     # fvSolution
                     'residualcontrol':[float,1.0e-20],
+                    'pimpleresidualcontrol':[float,1.0e-6],
                     'simplecontrol':[dict,{'nNonOrthogonalCorrectors':'0',
                                            #'pRefCell':'0',
                                            #'pRefValue':'0',
@@ -784,6 +797,14 @@ class PYDAFOAM(AeroSolver):
                                            'transonic':'false'}],
                     'pisocontrol':[dict,{'nNonOrthogonalCorrectors':'0',
                                          'nCorrectors':'2',
+                                         'pRefCell':'0',
+                                         'pRefValue':'0',
+                                         'maxCo':'0.5',
+                                         'rDeltaTSmoothingCoeff':'0.5',
+                                         'maxDeltaT':'0.5'}],
+                    'pimplecontrol':[dict,{'nNonOrthogonalCorrectors':'0',
+                                         'nCorrectors':'2',
+                                         'nOuterCorrectors':'50',
                                          'pRefCell':'0',
                                          'pRefValue':'0',
                                          'maxCo':'0.5',
@@ -2137,7 +2158,7 @@ class PYDAFOAM(AeroSolver):
 
     def _checkSolutionFailure(self, aeroProblem, funcs):
         """
-        Take in a an aeroProblem and check for failure. Then append the fail
+        Take an aeroProblem and check for failure, then append the fail
         flag in funcs.
         NOTE: this function is deprecated
     
@@ -4756,7 +4777,7 @@ class PYDAFOAM(AeroSolver):
         '''
         Write out the fvSolution file.
         
-        This will overwrite whateverfile is present so that the solve is completed
+        This will overwrite whatever file is present so that the solve is completed
         with the currently specified options.
         '''
         if self.comm.rank==0:
@@ -4769,6 +4790,7 @@ class PYDAFOAM(AeroSolver):
             f = open(fileLoc, 'w')
             
             residualctrl =  self.getOption('residualcontrol')
+            pimpctrl = self.getOption('pimpleresidualcontrol')
             
             # write the file header
             f.write('/*--------------------------------*- C++ -*---------------------------------*\ \n')
@@ -4816,6 +4838,22 @@ class PYDAFOAM(AeroSolver):
             f.write('{\n')
             for key in pisoControl.keys():
                 f.write('    %-30s     %s;\n'%(key,pisoControl[key]))
+            f.write('}\n')
+            f.write('\n')
+
+            pimpleControl = self.getOption('pimplecontrol')
+            f.write('PIMPLE\n')
+            f.write('{\n')
+            for key in pimpleControl.keys():
+                f.write('    %-30s     %s;\n'%(key,pimpleControl[key]))
+            f.write('    residualControl\n')
+            f.write('    {\n')
+            f.write('        "(U|nuTilda|p|e|h|p_rgh|k|omega|epsilon|T|rho)"\n')
+            f.write('            {\n')
+            f.write('                 tolerance                              %e;\n'%pimpctrl )
+            f.write('                 relTol                                  0;\n')
+            f.write('            }\n')
+            f.write('    }\n')
             f.write('}\n')
             f.write('\n')
 
@@ -5358,7 +5396,7 @@ class PYDAFOAM(AeroSolver):
         '''
         Write out the controlDict file.
         
-        This will overwrite whateverfile is present so that the solve is completed
+        This will overwrite whatever file is present so that the solve is completed
         with the currently specified options.
         '''
         if self.comm.rank==0:
@@ -5415,47 +5453,98 @@ class PYDAFOAM(AeroSolver):
                 f.write('    "libSpalartAllmarasFv3Compressible.so" \n')
             f.write(');\n')
             f.write('\n')     
-            f.write('application     %s;'%self.getOption('adjointsolver') )
+            f.write('application       %s;'%self.getOption('adjointsolver') )
             f.write('\n')
-            f.write('startFrom       %s;'%self.solveFrom )
+            f.write('startFrom         %s;'%self.solveFrom )
             f.write('\n')
-            f.write('startTime       0;')
+            f.write('startTime         0;')
             f.write('\n')
-            f.write('stopAt          endTime;')
+            f.write('stopAt            endTime;')
             f.write('\n')
-            f.write('endTime         %d;'%self.getOption('maxflowiters') )
+            f.write('endTime           %d;'%self.getOption('maxflowiters') )
             f.write('\n')
-            f.write('deltaT          1;')
+            f.write('deltaT            %f;'%self.getOption('deltat') )
             f.write('\n')
-            f.write('writeControl    timeStep;')
+            if self.getOption('adjusttimestep'):
+                f.write('runTimeModifiable true;')
+                f.write('\n')
+                f.write('adjustTimeStep    on;')
+                f.write('\n')
+                f.write('maxCo             %f;'%self.getOption('maxco') )
+                f.write('\n')
+                f.write('writeControl      adjustableRunTime;')
+                f.write('\n')
+                f.write('writeInterval     %f;'%self.getOption('writeinterval') )
+                f.write('\n')
+            else:
+                f.write('writeControl      timeStep;')
+                f.write('\n')
+                f.write('writeInterval     %d;'%self.getOption('writeinterval') )
+                f.write('\n')
+            f.write('purgeWrite        0;')
             f.write('\n')
-            f.write('writeInterval   %d;'%self.getOption('writeinterval') )
+            f.write('writeFormat       %s;'%self.getOption('writeformat') )
             f.write('\n')
-            f.write('purgeWrite      0;')
+            f.write('writePrecision    16;')
             f.write('\n')
-            f.write('writeFormat     %s;'%self.getOption('writeformat') )
+            f.write('writeCompression  %s;'%self.getOption('writecompress') )
             f.write('\n')
-            f.write('writePrecision  16;')
+            f.write('timeFormat        general;')
             f.write('\n')
-            f.write('writeCompression %s;'%self.getOption('writecompress') )
-            f.write('\n')
-            f.write('timeFormat      general;')
-            f.write('\n')
-            f.write('timePrecision   16;')
-            f.write('\n')
-            f.write('runTimeModifiable true;')
+            f.write('timePrecision     16;')
             f.write('\n')
             f.write('\n')
-
+            f.write('functions\n')
+            f.write('{ \n')
             objfuncs = self.getOption('objfuncs')
             isForceObj=False
             for objFunc in objfuncs:
                 if objfunc in ['CD','CL','CMX','CMY','CMZ']:
                     isForceObj=True
                     break
+            if self.getOption('adjointsolver') == 'pimpleDAFoam':
+                f.write('    fieldAverage\n')
+                f.write('    {\n')
+                f.write('        type            fieldAverage;\n')
+                f.write('        libs            ( "libfieldFunctionObjects.so" );\n')
+                f.write('        enabled         true;\n')
+                f.write('        timeStart       0;\n')
+                if self.getOption('adjusttimestep'):
+                    f.write('        writeControl    adjustableRunTime;\n')
+                    f.write('        writeInterval   %f;'%self.getOption('writeinterval') )
+                else:
+                    f.write('        writeControl    timeStep;\n')
+                    f.write('        writeInterval   %d;'%self.getOption('writeinterval') )
+                f.write('\n')
+                f.write('        fields\n')
+                f.write('        (\n')
+                f.write('            U\n')
+                f.write('            {\n')
+                f.write('                mean        on;\n')
+                f.write('                prime2Mean  off;\n')
+                f.write('                base        time;\n')
+                f.write('            }\n')
+                f.write('            p\n')
+                f.write('            {\n')
+                f.write('                mean        on;\n')
+                f.write('                prime2Mean  off;\n')
+                f.write('                base        time;\n')
+                f.write('            }\n')
+                f.write('            phi\n')
+                f.write('            {\n')
+                f.write('                mean        on;\n')
+                f.write('                prime2Mean  off;\n')
+                f.write('                base        time;\n')
+                f.write('            }\n')
+                f.write('            nut\n')
+                f.write('            {\n')
+                f.write('                mean        on;\n')
+                f.write('                prime2Mean  off;\n')
+                f.write('                base        time;\n')
+                f.write('            }\n')
+                f.write('        );\n')
+                f.write('    }\n')
             if isForceObj:
-                f.write('functions\n')
-                f.write('{ \n')
                 f.write('    forceCoeffs\n')
                 f.write('    { \n')
                 f.write('        type                forceCoeffs;\n')
@@ -5480,8 +5569,9 @@ class PYDAFOAM(AeroSolver):
                 f.write('        magUInf             %f;\n'%self.getOption('referencevalues')['magURef'] )
                 f.write('        lRef                %f;\n'%self.getOption('referencevalues')['LRef'] )
                 f.write('        Aref                %f;\n'%self.getOption('referencevalues')['ARef'] )
-                f.write('    } \n')
-                f.write('} \n')
+                f.write('    } \n\n')
+            f.write('    #includeFunc            residuals\n')
+            f.write('} \n')
             f.write('// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n')
 
             f.close()

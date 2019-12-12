@@ -1,0 +1,19 @@
+$(OBJECTS_DIR)/pimpleDAFoam.C.dep: \
+pimpleDAFoam.C \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/postProcess.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/addRegionOption.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/addFunctionObjectOptions.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/addDictOption.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/addCheckCaseOptions.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseListOptions.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseListOutput.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H \
+$(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H \
+createFields.H \
+correctPhi.H \
+UEqn.H \
+pEqn.H \
+
+

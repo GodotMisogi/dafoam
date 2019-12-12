@@ -29,11 +29,11 @@ AdjointDerivativePimpleFoam::AdjointDerivativePimpleFoam
     :
     AdjointDerivative(mesh,adjIO,adjReg,adjRAS,adjIdx,adjCon,adjObj),
     // initialize and register state variables and their residuals, we use macros defined in macroFunctions.H
-    setResidualClassMemberVector(UMean,dimensionSet(0,1,-2,0,0,0,0)),
-    setResidualClassMemberScalar(pMean,dimensionSet(0,0,-1,0,0,0,0)),
-    setResidualClassMemberPhi(phiMean),
+    setResidualClassMemberVector(U,dimensionSet(0,1,-2,0,0,0,0)),
+    setResidualClassMemberScalar(p,dimensionSet(0,0,-1,0,0,0,0)),
+    setResidualClassMemberPhi(phi),
     // create PimpleControl
-    Pimple_(mesh) 
+    pimple_(mesh) 
     
 {
     this->copyStates("Var2Ref"); // copy states to statesRef
@@ -59,7 +59,7 @@ void AdjointDerivativePimpleFoam::calcResiduals
 
     tmp<fvVectorMatrix> tUEqn
     (
-        fvm::ddt(U) + fvm::div(phi, U)
+        fvm::ddt(U_) + fvm::div(phi_, U_)
       + this->MRF_.DDt(U_)
       + adjRAS_.divDevReff(U_)
     );

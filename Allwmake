@@ -15,7 +15,7 @@ fi
 # now compile DAFoam
 # can be either Opt or Debug; default: Opt
 if [ -z "$DF_CompileMode" ]; then
-    export DF_CompileMode=Opt
+    export DF_CompileMode=Debug
 fi
 
 echo "CompileMode: ${DF_CompileMode}"
@@ -63,7 +63,7 @@ echo "************** Compiling prerequisite Libraries **************"
 sleep 1
 
 cd src/myLibs
-./Allwmake
+# ./Allwmake
 cd ../../
 
 echo "************** Compiling Incompressible Adjoint Solvers **************"
@@ -73,10 +73,10 @@ cd src
 makeIncompressible
 
 cd ../applications/coloringSolverIncompressible
-makeIncompressible
+# makeIncompressible
 
 cd ../simpleDAFoam
-makeIncompressible
+# makeIncompressible
 
 cd ../pimpleDAFoam
 makeIncompressible
@@ -127,7 +127,7 @@ makeIncompressible
 echo "************** Compiling Utilities **************"
 sleep 1
 
-cd applications/utilities
+cd ../../applications/utilities
 ./Allwmake
 
 cd ../../

@@ -1,6 +1,7 @@
 AdjointIO/AdjointIO.C
 
 AdjointSolverRegistry/AdjointSolverRegistry.C
+AdjointSolverRegistry/AdjointSolverRegistryPimpleFoam.C
 AdjointSolverRegistry/AdjointSolverRegistrySimpleFoam.C
 AdjointSolverRegistry/AdjointSolverRegistrySimpleTFoam.C
 AdjointSolverRegistry/AdjointSolverRegistryBuoyantBoussinesqSimpleFoam.C
@@ -22,6 +23,7 @@ AdjointRASModel/AdjointLaunderSharmaKE.C
 AdjointIndexing/AdjointIndexing.C
 
 AdjointJacobianConnectivity/AdjointJacobianConnectivity.C
+AdjointJacobianConnectivity/AdjointJacobianConnectivityPimpleFoam.C
 AdjointJacobianConnectivity/AdjointJacobianConnectivitySimpleFoam.C
 AdjointJacobianConnectivity/AdjointJacobianConnectivitySimpleTFoam.C
 AdjointJacobianConnectivity/AdjointJacobianConnectivityBuoyantBoussinesqSimpleFoam.C
@@ -32,6 +34,7 @@ AdjointJacobianConnectivity/AdjointJacobianConnectivitySolidDisplacementFoam.C
 AdjointObjectiveFunction/AdjointObjectiveFunction.C
 
 AdjointDerivative/AdjointDerivative.C
+AdjointDerivative/AdjointDerivativePimpleFoam.C
 AdjointDerivative/AdjointDerivativeSimpleFoam.C
 AdjointDerivative/AdjointDerivativeSimpleTFoam.C
 AdjointDerivative/AdjointDerivativeBuoyantBoussinesqSimpleFoam.C

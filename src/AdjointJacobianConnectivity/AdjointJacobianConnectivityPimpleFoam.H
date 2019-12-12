@@ -33,7 +33,7 @@ private:
 
 public:
 
-    TypeName ("PimpleDAFoam");
+    TypeName ("pimpleDAFoam");
     // Constructors
 
     //- Construct from components

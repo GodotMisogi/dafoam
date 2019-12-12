@@ -45,9 +45,9 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     (
         "URes",
         {
-            {"UMean","pMean","nutMean","phiMean"}, // lv0
-            {"UMean","pMean","nutMean"},       // lv1
-            {"UMean"}                  // lv2
+            {"U","p","nut","phi"}, // lv0
+            {"U","p","nut"},       // lv1
+            {"U"}                  // lv2
         }
     );
     
@@ -55,10 +55,10 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     (
         "pRes",
         {
-            {"UMean","pMean","nutMean","phiMean"}, // lv0
-            {"UMean","pMean","nutMean","phiMean"}, // lv1
-            {"UMean","pMean","nutMean"},       // lv2
-            {"UMean"}                  // lv3
+            {"U","p","nut","phi"}, // lv0
+            {"U","p","nut","phi"}, // lv1
+            {"U","p","nut"},       // lv2
+            {"U"}                  // lv3
         }
     );
     
@@ -66,9 +66,9 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     (
         "phiRes",
         {
-            {"UMean","pMean","nutMean","phiMean"}, // lv0
-            {"UMean","pMean","nutMean"},       // lv1
-            {"UMean"},                 // lv2
+            {"U","p","nut","phi"}, // lv0
+            {"U","p","nut"},       // lv1
+            {"U"},                 // lv2
         }
     );
     

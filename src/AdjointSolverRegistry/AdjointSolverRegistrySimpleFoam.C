@@ -38,7 +38,7 @@ AdjointSolverRegistrySimpleFoam::AdjointSolverRegistrySimpleFoam
 
 
     // Need to call this to check if the registered states are actually created in db
-    //this->validate();
+    // this->validate();
     
     // setup the derived state info
     this->setDerivedInfo();
