@@ -59,9 +59,9 @@ void AdjointDerivativePimpleFoam::calcResiduals
 
     tmp<fvVectorMatrix> tUEqn
     (
-        fvm::ddt(U_) + fvm::div(phi_, U_)
-      + this->MRF_.DDt(U_)
-      + adjRAS_.divDevReff(U_)
+        fvm::ddt(UMean_) + fvm::div(phiMean_, UMean_)
+      + this->MRF_.DDt(UMean_)
+      + adjRAS_.divDevReff(UMean_)
     );
     fvVectorMatrix& UEqn = tUEqn.ref();
 
@@ -72,8 +72,8 @@ void AdjointDerivativePimpleFoam::calcResiduals
 
     if (!updatePhi)
     {
-        if(isRef) UResRef_  = (UEqn&U_) + fvc::grad(p_);
-        else URes_  = (UEqn&U_) + fvc::grad(p_);
+        if(isRef) UResRef_  = (UEqn&UMean_) + fvc::grad(pMean_);
+        else URes_  = (UEqn&UMean_) + fvc::grad(pMean_);
         normalizeResiduals(URes);
         scaleResiduals(URes);
     }
@@ -88,22 +88,22 @@ void AdjointDerivativePimpleFoam::calcResiduals
     UEqn.relax();
     
     volScalarField rAU(1.0/UEqn.A());
-    //volVectorField HbyA(constrainHbyA(rAU*UEqn.H(), U_, p_));
+    //volVectorField HbyA(constrainHbyA(rAU*UEqn.H(), UMean_, pMean_));
     //***************** NOTE *******************
     // we should not use the constrainHbyA function above since it
     // will degrade the accuracy of shape derivatives. Basically, we should
     // not constrain any variable because it will create discontinuity
-    volVectorField HbyA("HbyA", U_);
+    volVectorField HbyA("HbyA", UMean_);
     HbyA = rAU*UEqn.H();
 
     surfaceScalarField phiHbyA("phiHbyA", fvc::flux(HbyA));
     this->MRF_.makeRelative(phiHbyA);
 
-    if (p_.needReference())
+    if (pMean_.needReference())
     {
-        fvc::makeRelative(phiHbyA, U_);
-        adjustPhi(phiHbyA, U_, p_);
-        fvc::makeAbsolute(phiHbyA, U_);
+        fvc::makeRelative(phiHbyA, UMean_);
+        adjustPhi(phiHbyA, UMean_, pMean_);
+        fvc::makeAbsolute(phiHbyA, UMean_);
     }
 
     tmp<volScalarField> rAtU(rAU);
@@ -111,8 +111,8 @@ void AdjointDerivativePimpleFoam::calcResiduals
     if (pimple_.consistent())
     {
         rAtU = 1.0/max(1.0/rAU - UEqn.H1(), 0.1/rAU);
-        phiHbyA += fvc::interpolate(rAtU() - rAU)*fvc::snGrad(p_)*mesh_.magSf();
-        HbyA -= (rAU - rAtU())*fvc::grad(p_);
+        phiHbyA += fvc::interpolate(rAtU() - rAU)*fvc::snGrad(pMean_)*mesh_.magSf();
+        HbyA -= (rAU - rAtU())*fvc::grad(pMean_);
     }
 
     if (pimple_.nCorrPISO() <= 1)
@@ -121,11 +121,11 @@ void AdjointDerivativePimpleFoam::calcResiduals
     }
 
     // Update the pressure BCs to ensure flux consistency
-    constrainPressure(p_, U_, phiHbyA, rAtU(), this->MRF_);
+    constrainPressure(pMean_, UMean_, phiHbyA, rAtU(), this->MRF_);
     
     fvScalarMatrix pEqn
     (
-        fvm::laplacian(rAtU(), p_) == fvc::div(phiHbyA)
+        fvm::laplacian(rAtU(), pMean_) == fvc::div(phiHbyA)
     );
     pEqn.setReference(pRefCell, pRefValue);
 
@@ -134,8 +134,8 @@ void AdjointDerivativePimpleFoam::calcResiduals
 
     if (!updatePhi)
     {
-        if(isRef) pResRef_  = pEqn&p_;
-        else pRes_  = pEqn&p_;
+        if(isRef) pResRef_  = pEqn&pMean_;
+        else pRes_  = pEqn&pMean_;
         normalizeResiduals(pRes);
         scaleResiduals(pRes);
     }
@@ -157,7 +157,7 @@ void AdjointDerivativePimpleFoam::calcResiduals
 void AdjointDerivativePimpleFoam::updateIntermediateVariables()
 {
     // update velocity boundary based on MRF
-    this->MRF_.correctBoundaryVelocity(U_);
+    this->MRF_.correctBoundaryVelocity(UMean_);
 }
 
 } // End namespace Foam

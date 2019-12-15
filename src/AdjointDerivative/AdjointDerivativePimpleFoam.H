@@ -36,18 +36,21 @@ protected:
     /// \name These are state variables, reference state variables, flow residuals, and partial derivatives
     //@{
     volVectorField& U_;
+    volVectorField& UMean_;
     volVectorField URef_;
     volVectorField URes_;
     volVectorField UResRef_;
     volVectorField UResPartDeriv_;
 
     volScalarField& p_;
+    volScalarField& pMean_;
     volScalarField pRef_;
     volScalarField pRes_;
     volScalarField pResRef_;
     volScalarField pResPartDeriv_;
     
-    surfaceScalarField& phi_;  
+    surfaceScalarField& phi_;
+    surfaceScalarField& phiMean_;
     surfaceScalarField phiRef_;  
     surfaceScalarField phiRes_;
     surfaceScalarField phiResRef_;
