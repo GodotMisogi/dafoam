@@ -41,41 +41,72 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     // pRes         3      2      2      1
     // phiRes       2      1      1      0
     
+    // adjStateResidualConInfo_.set
+    // (
+    //     "URes",
+    //     {
+    //         {"U","p","nut","phi"}, // lv0
+    //         {"U","p","nut"},       // lv1
+    //         {"U"}                  // lv2
+    //     }
+    // );
+    
+    // adjStateResidualConInfo_.set
+    // (
+    //     "pRes",
+    //     {
+    //         {"U","p","nut","phi"}, // lv0
+    //         {"U","p","nut","phi"}, // lv1
+    //         {"U","p","nut"},       // lv2
+    //         {"U"}                  // lv3
+    //     }
+    // );
+    
+    // adjStateResidualConInfo_.set
+    // (
+    //     "phiRes",
+    //     {
+    //         {"U","p","nut","phi"}, // lv0
+    //         {"U","p","nut"},       // lv1
+    //         {"U"},                 // lv2
+    //     }
+    // );
+
     adjStateResidualConInfo_.set
     (
-        "URes",
+        "UMeanRes",
         {
-            {"UMean","pMean","nutMean","phiMean"}, // lv0
-            {"UMean","pMean","nutMean"},       // lv1
+            {"UMean","pMean","nut","phiMean"}, // lv0
+            {"UMean","pMean","nut"},       // lv1
             {"UMean"}                  // lv2
         }
     );
     
     adjStateResidualConInfo_.set
     (
-        "pRes",
+        "pMeanRes",
         {
-            {"UMean","pMean","nutMean","phiMean"}, // lv0
-            {"UMean","pMean","nutMean","phiMean"}, // lv1
-            {"UMean","pMean","nutMean"},       // lv2
+            {"UMean","pMean","nut","phiMean"}, // lv0
+            {"UMean","pMean","nut","phiMean"}, // lv1
+            {"UMean","pMean","nut"},       // lv2
             {"UMean"}                  // lv3
         }
     );
     
     adjStateResidualConInfo_.set
     (
-        "phiRes",
+        "phiMeanRes",
         {
-            {"UMean","pMean","nutMean","phiMean"}, // lv0
-            {"UMean","pMean","nutMean"},       // lv1
+            {"UMean","pMean","nut","phiMean"}, // lv0
+            {"UMean","pMean","nut"},       // lv1
             {"UMean"},                 // lv2
         }
     );
     
     // need to correct turb con for each residual
-    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["URes"]);
-    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["pRes"]);
-    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["phiRes"]);
+    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["UMeanRes"]);
+    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["pMeanRes"]);
+    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["phiMeanRes"]);
     
     // add turbulence residual connectivity
     adjRAS.setAdjStateResidualTurbCon(adjStateResidualConInfo_);

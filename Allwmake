@@ -73,7 +73,7 @@ cd src
 makeIncompressible
 
 cd ../applications/coloringSolverIncompressible
-# makeIncompressible
+makeIncompressible
 
 cd ../simpleDAFoam
 # makeIncompressible
@@ -128,6 +128,6 @@ echo "************** Compiling Utilities **************"
 sleep 1
 
 cd ../../applications/utilities
-./Allwmake
+# ./Allwmake
 
 cd ../../

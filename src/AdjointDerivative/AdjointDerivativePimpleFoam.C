@@ -29,9 +29,12 @@ AdjointDerivativePimpleFoam::AdjointDerivativePimpleFoam
     :
     AdjointDerivative(mesh,adjIO,adjReg,adjRAS,adjIdx,adjCon,adjObj),
     // initialize and register state variables and their residuals, we use macros defined in macroFunctions.H
-    setResidualClassMemberVector(U,dimensionSet(0,1,-2,0,0,0,0)),
-    setResidualClassMemberScalar(p,dimensionSet(0,0,-1,0,0,0,0)),
-    setResidualClassMemberPhi(phi),
+    // setResidualClassMemberVector(U,dimensionSet(0,1,-2,0,0,0,0)),
+    // setResidualClassMemberScalar(p,dimensionSet(0,0,-1,0,0,0,0)),
+    // setResidualClassMemberPhi(phi),
+    setResidualClassMemberVector(UMean,dimensionSet(0,1,-2,0,0,0,0)),
+    setResidualClassMemberScalar(pMean,dimensionSet(0,0,-1,0,0,0,0)),
+    setResidualClassMemberPhi(phiMean),
     // create PimpleControl
     pimple_(mesh) 
     
@@ -68,14 +71,14 @@ void AdjointDerivativePimpleFoam::calcResiduals
     //UEqn.relax();
 
     // set fvMatrix for fast PC construction in NK solver
-    setFvMatrix("U",UEqn);
+    setFvMatrix("UMean",UEqn);
 
     if (!updatePhi)
     {
-        if(isRef) UResRef_  = (UEqn&UMean_) + fvc::grad(pMean_);
-        else URes_  = (UEqn&UMean_) + fvc::grad(pMean_);
-        normalizeResiduals(URes);
-        scaleResiduals(URes);
+        if(isRef) UMeanResRef_  = (UEqn&UMean_) + fvc::grad(pMean_);
+        else UMeanRes_  = (UEqn&UMean_) + fvc::grad(pMean_);
+        normalizeResiduals(UMeanRes);
+        scaleResiduals(UMeanRes);
     }
 
     // ******** p Residuals **********
@@ -130,25 +133,25 @@ void AdjointDerivativePimpleFoam::calcResiduals
     pEqn.setReference(pRefCell, pRefValue);
 
     // set fvMatrix for fast PC construction in NK solver
-    setFvMatrix("p",pEqn);
+    setFvMatrix("pMean",pEqn);
 
     if (!updatePhi)
     {
-        if(isRef) pResRef_  = pEqn&pMean_;
-        else pRes_  = pEqn&pMean_;
-        normalizeResiduals(pRes);
-        scaleResiduals(pRes);
+        if(isRef) pMeanResRef_  = pEqn&pMean_;
+        else pMeanRes_  = pEqn&pMean_;
+        normalizeResiduals(pMeanRes);
+        scaleResiduals(pMeanRes);
     }
 
-    if(updatePhi) phi_=phiHbyA - pEqn.flux();
+    if(updatePhi) phiMean_=phiHbyA - pEqn.flux();
 
     // ******** phi Residuals **********
     // copied and modified from pEqn.H
-    if(isRef) phiResRef_ = phiHbyA - pEqn.flux() - phi_;
-    else phiRes_ = phiHbyA - pEqn.flux() - phi_;
+    if(isRef) phiMeanResRef_ = phiHbyA - pEqn.flux() - phiMean_;
+    else phiMeanRes_ = phiHbyA - pEqn.flux() - phiMean_;
     // need to normalize phiRes
-    normalizePhiResiduals(phiRes);
-    scalePhiResiduals(phiRes);   
+    normalizePhiResiduals(phiMeanRes);
+    scalePhiResiduals(phiMeanRes);   
     
     return;
 

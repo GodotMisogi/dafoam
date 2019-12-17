@@ -13,6 +13,21 @@ volVectorField U
     dimensionedVector("U",dimensionSet(0,1,-1,0,0,0,0),vector::zero),
     zeroGradientFvPatchVectorField::typeName
 );
+
+volVectorField UMean
+(
+    IOobject
+    (
+        "UMean",
+        mesh.time().timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedVector("UMean",dimensionSet(0,1,-1,0,0,0,0),vector::zero),
+    zeroGradientFvPatchVectorField::typeName
+);
 #include "createPhi.H"
 
 singlePhaseTransportModel laminarTransport(U, phi);

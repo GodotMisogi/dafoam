@@ -26,9 +26,9 @@ AdjointSolverRegistryPimpleFoam::AdjointSolverRegistryPimpleFoam
     // Register state variables
     // NOTE: do not include any turbulence state variables since they will be added 
     // in the AdjointRASModel class!
-    volScalarStates.append("p");
-    volVectorStates.append("U");
-    surfaceScalarStates.append("phi");
+    volScalarStates.append("pMean");
+    volVectorStates.append("UMean");
+    surfaceScalarStates.append("phiMean");
     // append here if you have more state variables
 
     // for debugging

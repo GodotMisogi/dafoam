@@ -92,6 +92,22 @@ AdjointJacobianConnectivity::AdjointJacobianConnectivity
             dimensionedVector("U",dimensionSet(0,1,-1,0,0,0,0),vector::zero),
             zeroGradientFvPatchVectorField::typeName
         );
+
+        volVectorField UMean
+        (
+            IOobject
+            (
+                "UMean",
+                mesh_.time().timeName(),
+                mesh_,
+                IOobject::READ_IF_PRESENT,
+                IOobject::NO_WRITE,
+                false
+            ),
+            mesh_,
+            dimensionedVector("UMean",dimensionSet(0,1,-1,0,0,0,0),vector::zero),
+            zeroGradientFvPatchVectorField::typeName
+        );
         
         forAll(U.boundaryField(),patchI)
         {

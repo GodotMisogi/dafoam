@@ -35,26 +35,38 @@ protected:
 
     /// \name These are state variables, reference state variables, flow residuals, and partial derivatives
     //@{
-    volVectorField& U_;
+    // volVectorField& U_;
+    // volVectorField URef_;
+    // volVectorField URes_;
+    // volVectorField UResRef_;
+    // volVectorField UResPartDeriv_;
     volVectorField& UMean_;
-    volVectorField URef_;
-    volVectorField URes_;
-    volVectorField UResRef_;
-    volVectorField UResPartDeriv_;
+    volVectorField UMeanRef_;
+    volVectorField UMeanRes_;
+    volVectorField UMeanResRef_;
+    volVectorField UMeanResPartDeriv_;
 
-    volScalarField& p_;
+    // volScalarField& p_;
+    // volScalarField pRef_;
+    // volScalarField pRes_;
+    // volScalarField pResRef_;
+    // volScalarField pResPartDeriv_;
     volScalarField& pMean_;
-    volScalarField pRef_;
-    volScalarField pRes_;
-    volScalarField pResRef_;
-    volScalarField pResPartDeriv_;
+    volScalarField pMeanRef_;
+    volScalarField pMeanRes_;
+    volScalarField pMeanResRef_;
+    volScalarField pMeanResPartDeriv_;
     
-    surfaceScalarField& phi_;
-    surfaceScalarField& phiMean_;
-    surfaceScalarField phiRef_;  
-    surfaceScalarField phiRes_;
-    surfaceScalarField phiResRef_;
-    surfaceScalarField phiResPartDeriv_; 
+    // surfaceScalarField& phi_;
+    // surfaceScalarField phiRef_;  
+    // surfaceScalarField phiRes_;
+    // surfaceScalarField phiResRef_;
+    // surfaceScalarField phiResPartDeriv_;
+    surfaceScalarField& phiMean_; 
+    surfaceScalarField phiMeanRef_;  
+    surfaceScalarField phiMeanRes_;
+    surfaceScalarField phiMeanResRef_;
+    surfaceScalarField phiMeanResPartDeriv_;
     //@}
 
     pimpleControl pimple_;
