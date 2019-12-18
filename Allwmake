@@ -63,7 +63,7 @@ echo "************** Compiling prerequisite Libraries **************"
 sleep 1
 
 cd src/myLibs
-# ./Allwmake
+./Allwmake
 cd ../../
 
 echo "************** Compiling Incompressible Adjoint Solvers **************"

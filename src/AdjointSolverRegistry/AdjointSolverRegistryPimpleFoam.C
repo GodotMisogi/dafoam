@@ -28,7 +28,7 @@ AdjointSolverRegistryPimpleFoam::AdjointSolverRegistryPimpleFoam
     // in the AdjointRASModel class!
     volScalarStates.append("pMean");
     volVectorStates.append("UMean");
-    surfaceScalarStates.append("phiMean");
+    surfaceScalarStates.append("phi");
     // append here if you have more state variables
 
     // for debugging

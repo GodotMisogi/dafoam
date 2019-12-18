@@ -216,7 +216,7 @@ tmp<volScalarField> AdjointSpalartAllmaras::Stilda
     const volScalarField& fv1
 ) const
 {
-    volScalarField Omega(::sqrt(2.0)*mag(skew(fvc::grad(U_))));
+    volScalarField Omega(::sqrt(2.0)*mag(skew(fvc::grad(UMean_))));
     
     return
     (
@@ -453,8 +453,8 @@ void AdjointSpalartAllmaras::setAdjStateResidualTurbCon
     (
         "nuTildaRes",
         {
-            {"U","nuTilda","phi"}, // lv0
-            {"U","nuTilda"},       // lv1
+            {"UMean","nuTilda","phi"}, // lv0
+            {"UMean","nuTilda"},       // lv1
             {"nuTilda"}            // lv2
         }
     );
@@ -465,8 +465,8 @@ void AdjointSpalartAllmaras::setAdjStateResidualTurbCon
     (
         "nuTildaRes",
         {
-            {"U","T",pName,"nuTilda","phi"}, // lv0
-            {"U","T",pName,"nuTilda"},       // lv1
+            {"UMean","T",pName,"nuTilda","phi"}, // lv0
+            {"UMean","T",pName,"nuTilda"},       // lv1
             {"T",pName,"nuTilda"}            // lv2
         }
     );

@@ -57,16 +57,16 @@ protected:
     volScalarField pMeanResRef_;
     volScalarField pMeanResPartDeriv_;
     
-    // surfaceScalarField& phi_;
-    // surfaceScalarField phiRef_;  
-    // surfaceScalarField phiRes_;
-    // surfaceScalarField phiResRef_;
-    // surfaceScalarField phiResPartDeriv_;
-    surfaceScalarField& phiMean_; 
-    surfaceScalarField phiMeanRef_;  
-    surfaceScalarField phiMeanRes_;
-    surfaceScalarField phiMeanResRef_;
-    surfaceScalarField phiMeanResPartDeriv_;
+    surfaceScalarField& phi_;
+    surfaceScalarField phiRef_;  
+    surfaceScalarField phiRes_;
+    surfaceScalarField phiResRef_;
+    surfaceScalarField phiResPartDeriv_;
+    // surfaceScalarField& phiMean_; 
+    // surfaceScalarField phiMeanRef_;  
+    // surfaceScalarField phiMeanRes_;
+    // surfaceScalarField phiMeanResRef_;
+    // surfaceScalarField phiMeanResPartDeriv_;
     //@}
 
     pimpleControl pimple_;

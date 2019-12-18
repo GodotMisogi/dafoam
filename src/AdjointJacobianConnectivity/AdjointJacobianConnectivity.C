@@ -77,21 +77,21 @@ AdjointJacobianConnectivity::AdjointJacobianConnectivity
         // if yes, we need special treatment for connectivity
         // Note we need to read the U field, instead of getting it from db
         // this is because coloringSolver does not read U 
-        volVectorField U
-        (
-            IOobject
-            (
-                "U",
-                mesh_.time().timeName(),
-                mesh_,
-                IOobject::READ_IF_PRESENT,
-                IOobject::NO_WRITE,
-                false
-            ),
-            mesh_,
-            dimensionedVector("U",dimensionSet(0,1,-1,0,0,0,0),vector::zero),
-            zeroGradientFvPatchVectorField::typeName
-        );
+        // volVectorField U
+        // (
+        //     IOobject
+        //     (
+        //         "U",
+        //         mesh_.time().timeName(),
+        //         mesh_,
+        //         IOobject::READ_IF_PRESENT,
+        //         IOobject::NO_WRITE,
+        //         false
+        //     ),
+        //     mesh_,
+        //     dimensionedVector("U",dimensionSet(0,1,-1,0,0,0,0),vector::zero),
+        //     zeroGradientFvPatchVectorField::typeName
+        // );
 
         volVectorField UMean
         (
@@ -109,9 +109,9 @@ AdjointJacobianConnectivity::AdjointJacobianConnectivity
             zeroGradientFvPatchVectorField::typeName
         );
         
-        forAll(U.boundaryField(),patchI)
+        forAll(UMean.boundaryField(),patchI)
         {
-            if(U.boundaryFieldRef()[patchI].type()=="pressureInletVelocity")
+            if(UMean.boundaryFieldRef()[patchI].type()=="pressureInletVelocity")
             {
                 hasPIVBC=1;
             }
@@ -122,7 +122,7 @@ AdjointJacobianConnectivity::AdjointJacobianConnectivity
             VecCreate(PETSC_COMM_WORLD,&isPIVBCState_);
             VecSetSizes(isPIVBCState_,adjIdx_.nLocalAdjointStates,PETSC_DECIDE);
             VecSetFromOptions(isPIVBCState_);
-            this->calcIsPIVBCState(U,isPIVBCState_);
+            this->calcIsPIVBCState(UMean,isPIVBCState_);
         }
         
     }
@@ -229,20 +229,25 @@ void AdjointJacobianConnectivity::setupdRdWCon(label isPrealloc,label isPC)
     // loop over all cell residuals
     forAll(adjIdx_.adjStateNames,idxI) 
     {
+        cout << "Preregistered State Name: " << adjIdx_.adjStateNames[idxI] << '\n';
         // get stateName and residual names
         word stateName = adjIdx_.adjStateNames[idxI];
+        cout << "State Name: " << stateName << '\n';
         word resName = stateName+"Res";
 
         // check if this state is a cell state, we do surfaceScalarState residuals separately
         if (adjIdx_.adjStateType[stateName] == "surfaceScalarState") continue; 
+        cout << "surfaceScalarState test passed\n";
 
         // maximal connectivity level information
         label maxConLevel = adjStateResidualConInfo_[resName].size()-1;
-        
+        cout << "Maximal connectivity level test passed\n";
+
         // if it is a vectorState, set compMax=3
         label compMax = 1;
         if (adjIdx_.adjStateType[stateName] == "volVectorState") compMax=3;
-        
+        cout << "volVectorState test passed\n";
+
         forAll(mesh_.cells(), cellI)
         {
             for(label comp=0; comp<compMax; comp++)
@@ -347,11 +352,12 @@ void AdjointJacobianConnectivity::setupdRdWCon(label isPrealloc,label isPC)
                 }
 
             }
-            
+            // cout << "Coloring for State Name completed: " << stateName << '\n'; 
         }
-
+        // cout << "Next state...\n";
     }
     
+    cout << "Great success - 1 - very nice";
     
     // loop over all face residuals
     forAll(adjReg_.surfaceScalarStates,idxI) 

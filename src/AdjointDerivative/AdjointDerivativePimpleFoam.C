@@ -31,10 +31,10 @@ AdjointDerivativePimpleFoam::AdjointDerivativePimpleFoam
     // initialize and register state variables and their residuals, we use macros defined in macroFunctions.H
     // setResidualClassMemberVector(U,dimensionSet(0,1,-2,0,0,0,0)),
     // setResidualClassMemberScalar(p,dimensionSet(0,0,-1,0,0,0,0)),
-    // setResidualClassMemberPhi(phi),
+    setResidualClassMemberPhi(phi),
     setResidualClassMemberVector(UMean,dimensionSet(0,1,-2,0,0,0,0)),
     setResidualClassMemberScalar(pMean,dimensionSet(0,0,-1,0,0,0,0)),
-    setResidualClassMemberPhi(phiMean),
+    // setResidualClassMemberPhi(phiMean),
     // create PimpleControl
     pimple_(mesh) 
     
@@ -54,7 +54,7 @@ void AdjointDerivativePimpleFoam::calcResiduals
     // We dont support MRF and fvOptions so all the related lines are commented 
     // out for now
     
-    word divUScheme="div(phi,U)";
+    word divUScheme="div(phi,UMean)";
     if(isPC) divUScheme="div(pc)";
 
     // ******** U Residuals **********
@@ -62,7 +62,7 @@ void AdjointDerivativePimpleFoam::calcResiduals
 
     tmp<fvVectorMatrix> tUEqn
     (
-        fvm::ddt(UMean_) + fvm::div(phiMean_, UMean_)
+        fvm::ddt(UMean_) + fvm::div(phi_, UMean_)
       + this->MRF_.DDt(UMean_)
       + adjRAS_.divDevReff(UMean_)
     );
@@ -143,15 +143,15 @@ void AdjointDerivativePimpleFoam::calcResiduals
         scaleResiduals(pMeanRes);
     }
 
-    if(updatePhi) phiMean_=phiHbyA - pEqn.flux();
+    if(updatePhi) phi_=phiHbyA - pEqn.flux();
 
     // ******** phi Residuals **********
     // copied and modified from pEqn.H
-    if(isRef) phiMeanResRef_ = phiHbyA - pEqn.flux() - phiMean_;
-    else phiMeanRes_ = phiHbyA - pEqn.flux() - phiMean_;
+    if(isRef) phiResRef_ = phiHbyA - pEqn.flux() - phi_;
+    else phiRes_ = phiHbyA - pEqn.flux() - phi_;
     // need to normalize phiRes
-    normalizePhiResiduals(phiMeanRes);
-    scalePhiResiduals(phiMeanRes);   
+    normalizePhiResiduals(phiRes);
+    scalePhiResiduals(phiRes);   
     
     return;
 

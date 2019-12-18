@@ -46,11 +46,11 @@ AdjointRASModel::AdjointRASModel
             db_.lookupObject<volScalarField>("nut")
         )
     ),
-    U_
+    UMean_
     (
         const_cast<volVectorField&>
         (
-            db_.lookupObject<volVectorField>("U")
+            db_.lookupObject<volVectorField>("UMean")
         )
     ),
     phi_
@@ -385,13 +385,13 @@ tmp<volSymmTensorField> AdjointRASModel::devRhoReff()
         (
             IOobject
             (
-                IOobject::groupName("devRhoReff", U_.group()),
+                IOobject::groupName("devRhoReff", UMean_.group()),
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::NO_READ,
                 IOobject::NO_WRITE
             ),
-            ( -phase_ * rho_ * nuEff() ) * dev(twoSymm(fvc::grad(U_)))
+            ( -phase_ * rho_ * nuEff() ) * dev(twoSymm(fvc::grad(UMean_)))
         )
     );
 } 

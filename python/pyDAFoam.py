@@ -874,6 +874,7 @@ class PYDAFOAM(AeroSolver):
                     # fvSchemes
                     'divschemes':[dict,{'default':'none',
                                         'div(phi,U)':'bounded Gauss linearUpwindV grad(U)',
+                                        'div(phi,UMean)':'bounded Gauss linearUpwindV grad(UMean)',
                                         'div(phi,T)':'bounded Gauss upwind',
                                         'div(phi,e)':'bounded Gauss upwind',
                                         'div(phi,h)':'bounded Gauss upwind',
@@ -900,7 +901,7 @@ class PYDAFOAM(AeroSolver):
                     'd2dt2schemes':[dict,{'default':'steadyState'}],
                     'laplacianschemes':[dict,{'default':'Gauss linear corrected'}],
                     'sngradschemes':[dict,{'default':'corrected'}],
-                    'fluxrequired':[list,['p','p_rgh','Phi']],
+                    'fluxrequired':[list,['p','p_rgh','Phi', 'pMean']],
                     'divuadj':[str,''], # if divuadj is non-empty, run adjoint using divuadj instead 
                     'divdev2':[bool,True],
                     'walldistmethod':[str,'meshWave'],

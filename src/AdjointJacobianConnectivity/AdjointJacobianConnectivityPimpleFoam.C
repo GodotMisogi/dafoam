@@ -76,7 +76,7 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     (
         "UMeanRes",
         {
-            {"UMean","pMean","nut","phiMean"}, // lv0
+            {"UMean","pMean","nut","phi"}, // lv0
             {"UMean","pMean","nut"},       // lv1
             {"UMean"}                  // lv2
         }
@@ -86,8 +86,8 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     (
         "pMeanRes",
         {
-            {"UMean","pMean","nut","phiMean"}, // lv0
-            {"UMean","pMean","nut","phiMean"}, // lv1
+            {"UMean","pMean","nut","phi"}, // lv0
+            {"UMean","pMean","nut","phi"}, // lv1
             {"UMean","pMean","nut"},       // lv2
             {"UMean"}                  // lv3
         }
@@ -95,9 +95,9 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     
     adjStateResidualConInfo_.set
     (
-        "phiMeanRes",
+        "phiRes",
         {
-            {"UMean","pMean","nut","phiMean"}, // lv0
+            {"UMean","pMean","nut","phi"}, // lv0
             {"UMean","pMean","nut"},       // lv1
             {"UMean"},                 // lv2
         }
@@ -106,7 +106,7 @@ AdjointJacobianConnectivityPimpleFoam::AdjointJacobianConnectivityPimpleFoam
     // need to correct turb con for each residual
     adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["UMeanRes"]);
     adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["pMeanRes"]);
-    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["phiMeanRes"]);
+    adjRAS.correctAdjStateResidualTurbCon(adjStateResidualConInfo_["phiRes"]);
     
     // add turbulence residual connectivity
     adjRAS.setAdjStateResidualTurbCon(adjStateResidualConInfo_);

@@ -71,7 +71,7 @@ protected:
     const objectRegistry& db_;
     
     volScalarField& nut_;
-    volVectorField& U_;
+    volVectorField& UMean_;
     surfaceScalarField& phi_;
 
 #ifdef IncompressibleFlow
